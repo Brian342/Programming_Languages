@@ -1,0 +1,319 @@
+use databasesoccer
+;
+
+SELECT *
+	FROM databasesoccer.directory
+;
+
+-- Data Cleaning Steps to Follow
+-- 1. Remove Duplicates
+-- 2. Standardize the data
+-- 3. Null Values or Blank values
+-- 4. Remove Any columns
+
+-- Remove Duplicates
+
+# creating a duplicate table to work on the dataset
+CREATE TABLE dup_soccer_table
+LIKE databasesoccer.directory
+;
+
+SELECT *
+	FROM dup_soccer_table
+;
+
+# insert details to the table
+INSERT dup_soccer_table
+SELECT *
+	FROM databasesoccer.directory
+;
+
+# removing the duplicates
+SELECT *,
+	ROW_NUMBER() OVER(
+    PARTITION BY Brand, `Store Number`, `Store Name`, `Ownership Type`,`Street Address`, City, `State/Province`, Country,Postcode, `Phone Number`, Timezone, Longitude, Latitude) As row_num
+	FROM dup_soccer_table
+;
+
+# using CTE to remove duplicate
+WITH cte_duplicate AS
+(
+	SELECT *,
+	ROW_NUMBER() OVER(
+    PARTITION BY Brand, `Store Number`, `Store Name`, `Ownership Type`,`Street Address`, 
+    City, `State/Province`, Country,Postcode, `Phone Number`, Timezone, Longitude, Latitude) As row_num
+	FROM dup_soccer_table
+)
+SELECT *
+	FROM cte_duplicate
+    WHERE row_num > 1
+;
+# No duplicate values on this dataset
+CREATE TABLE `dup_soccer_table2` (
+  `Brand` text,
+  `Store Number` text,
+  `Store Name` text,
+  `Ownership Type` text,
+  `Street Address` text,
+  `City` text,
+  `State/Province` text,
+  `Country` text,
+  `Postcode` text,
+  `Phone Number` text,
+  `Timezone` text,
+  `Longitude` double DEFAULT NULL,
+  `Latitude` double DEFAULT NULL,
+  `row_num` INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+SELECT *
+	FROM dup_soccer_table2
+;
+
+INSERT INTO dup_soccer_table2
+SELECT *,
+ROW_NUMBER() OVER(
+PARTITION BY 
+	Brand, `Store Number`, `Store Name`, `Ownership Type`,`Street Address`, 
+    City, `State/Province`, Country, Postcode, `Phone Number`, Timezone, Longitude, Latitude) As row_num
+FROM dup_soccer_table
+;
+
+SELECT *
+	FROM dup_soccer_table2
+WHERE row_num > 1
+;
+# Delete the duplicate value
+DELETE
+	FROM dup_soccer_table2
+WHERE row_num > 1
+;
+
+# check if the data is deleted
+SELECT *
+	FROM dup_soccer_table2
+WHERE row_num > 1
+;
+
+
+-- 2. Standardize the data(finding issues in the dataset and handling them)
+SELECT *
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- return unique value
+SELECT DISTINCT Brand
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- return store number 
+SELECT  `Store Number`, row_num
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- trim the store name column
+SELECT TRIM(`Store Name`) store_Name_trimmed
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- update the trimmed store name in the table
+UPDATE databasesoccer.dup_soccer_table2
+	SET `Store Name` = TRIM(`Store Name`)
+;
+
+-- check the Ownership Type column
+SELECT DISTINCT `Ownership Type`
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- check the Street address of the table and update it
+SELECT `Street Address`
+	FROM databasesoccer.dup_soccer_table2
+;
+
+UPDATE databasesoccer.dup_soccer_table2
+	SET `Street Address` = TRIM(`Street Address`)
+;
+
+
+-- check the city column and trim any spaces
+SELECT DISTINCT city
+	FROM databasesoccer.dup_soccer_table2
+;
+
+UPDATE databasesoccer.dup_soccer_table2
+	SET city = TRIM(City)
+;
+
+SELECT DISTINCT `State/Province`
+	FROM databasesoccer.dup_soccer_table2
+;
+
+SELECT  DISTINCT Brand, 
+	`Ownership Type`,
+	Country,
+	Postcode,
+	`Phone Number`,
+	Timezone,
+	Longitude,
+	Latitude,
+	`Store Number`,
+	`Street Address`,City,`State/Province`, `Phone Number`
+	FROM databasesoccer.dup_soccer_table2
+    WHERE `State/Province` = 'DU'
+;
+
+-- check the Country column
+SELECT DISTINCT Country
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- check the postacode and fill null with 0
+SELECT Postcode
+	FROM databasesoccer.dup_soccer_table2
+;
+
+-- update and fill the PostCode null values to 0 Option 1
+
+/*
+UPDATE databasesoccer.dup_soccer_table2
+ 	SET Postcode = 0
+     WHERE Postcode IS NULL
+;
+*/
+
+-- Option 2 filling the Null values with 0
+SELECT COALESCE(Postcode, 0) As PostCode
+	FROM databasesoccer.dup_soccer_table2
+;
+
+
+SELECT `Phone Number`
+	FROM databasesoccer.dup_soccer_table2
+;
+
+SELECT *
+	FROM databasesoccer.dup_soccer_table2
+;
+
+
+
+
+
+
+-- change the datatype of the columns
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
