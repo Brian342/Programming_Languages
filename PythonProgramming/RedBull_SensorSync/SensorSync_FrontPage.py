@@ -1,0 +1,364 @@
+from calendar import month
+
+import pandas as pd
+from pyparsing import col
+from Sensor_Data import cleaning, manipulate_date, round_value
+import numpy as np
+import streamlit as st
+import seaborn as sns
+import matplotlib.pyplot as plt
+from SensorSync_FrontPage import *
+
+
+# modification of streamlit page
+st.set_page_config(
+    page_title="WareHouse Readings", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+    )
+
+# cleaning the data and Feature Engineering
+def clean_and_preprocessing(df):
+    """This function takes a DataFrame as input and performs data cleaning and preprocessing steps, 
+    including handling null values, manipulating date columns, and rounding sensor readings.
+    **Parameters:df
+    **Returns:None
+    """
+    df_clean = df.copy()
+
+    # Handling missing values for 'age' column
+    if 'age' in df_clean.columns:
+        df_clean['age'] = df_clean['age'].fillna(df_clean['age'].median())
+        df_clean['age'] = df_clean['age'].astype(int)
+
+    # DateTime Manipulation
+    if 'datetime' in df_clean.columns:
+        df_clean['datetime'] = pd.to_datetime(df_clean['datetime'])
+        df_clean['year'] = df_clean['datetime'].dt.year
+        df_clean['month_num'] = df_clean['datetime'].dt.month
+        df_clean['date'] = df_clean['datetime'].dt.day
+        df_clean['hour'] = df_clean['datetime'].dt.hour
+
+        mounth_map = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun',
+                            7:'July', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'}
+        df_clean['month'] = df_clean['month_num'].map(mounth_map)
+
+    # Rounding sensor readings to 2 decimal places
+    sensor_cols = ['volt', 'rotate', 'pressure', 'vibration']
+    for col in sensor_cols:
+        if col in df_clean.columns:
+            df_clean[col] = round(df_clean[col], 2)
+
+    return df_clean
+CUSTOM_CSS = r"""
+    <style>
+:root[data-theme="light"] {
+  --bg: #0f172a;
+  --card: rgba(255,255,255,0.06);
+  --text: #0b1220;
+  --accent1: linear-gradient(90deg,#7c3aed, #06b6d4);
+}
+:root[data-theme="dark"] {
+  --bg: #070812;
+  --card: rgba(255,255,255,0.04);
+  --text: #dbeafe;
+  --accent1: linear-gradient(90deg,#06b6d4, #7c3aed);
+}
+
+/* Apply glass card effect to streamlit elements */
+main .block-container {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+  padding: 1.6rem 2rem;
+}
+section[data-testid="stSidebar"] .css-1d391kg {
+  background: transparent;
+}
+.css-1d391kg, .css-1d391kg .stButton button {
+  border-radius: 14px;
+}
+
+/* Title style */
+.header {
+  display:flex; align-items:center; gap:12px;
+}
+.logo-circle {
+  width:56px;height:56px;border-radius:12px;
+  background: var(--accent1);
+  display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+  box-shadow: 0 8px 30px rgba(99,102,241,0.15);
+}
+
+/* Card style used in columns */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+/* small pills */
+.pill {
+  display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;background:rgba(255,255,255,0.03);
+}
+
+/* bot bubble */
+.bot {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding: 10px 12px;border-radius:12px;margin:6px 0;
+}
+footer {
+    color: white !important;
+    background-color: #0e1117;
+    padding: 8px;
+    font-size: 16px;
+}
+</style>
+"""
+
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+# Initialize session State for data persistence across tabs
+if 'data' not in st.session_state:
+    st.session_state['data'] = None
+
+tabs = st.tabs(["Overview", "Upload Data", "Exploratory Analysis", "Dashboard"])
+
+
+with tabs[0]:
+    st.markdown(
+        """
+            <div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:20px'>
+            <div>
+                <h1 style='margin:0;background:linear-gradient(90deg,#06b6d4,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
+                    WareHouse Sensor Readings
+                </h1>
+                <div style='color:gray;font-size:15px;'>AI-powered, monitoring and Analysis — Derives Hided information from raw sensor Data obtained from sensors in a Company</div>
+            </div>
+            </div>
+            """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<div style='margin-bottom:10px'></div>", unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns([6.75, 5.55, 6.69])
+
+    with c1:
+        st.markdown(
+            "<div class='card'><h4 style='margin:0'>Why need this system?</h4>"
+            "<div style='color:gray;margin-top:6px'>Implementing an industrial sensor monitoring system transforms a company’s " \
+            "operations by shifting from costly, reactive 'run-to-failure' models to Predictive Maintenance (PdM), " \
+            "which utilizes real-time data like vibration and pressure to catch mechanical issues weeks before they escalate. " \
+            "This proactive approach eliminates expensive unplanned downtime by allowing repairs to be scheduled during off-peak hours, " \
+            "while simultaneously enhancing workplace safety through automated logic controls that shut down equipment in dangerous 'red-zone' conditions. " \
+            "Furthermore, by keeping machinery running within optimal parameters, companies significantly extend asset lifespans and delay massive capital expenditures, " \
+            "all while utilizing 'black box' Root Cause Analysis to prevent repeat failures and optimizing resource efficiency by targeting labor and energy usage only where it is truly needed.</div></div>",
+            unsafe_allow_html=True
+        )
+
+        key_stats = [
+            """
+            * Total Asset Loss: Historically, without sensor monitoring, 5% to 10% of heavy industrial machinery experiences a "fatal" catastrophic breakdown annually that requires total replacement..
+            * The Cost of a "Crash": Unplanned system crashes result in an average of 12–24 hours of downtime; for high-output companies, this translates to a loss of 20,000 - 200,000 dollars per hour depending on the industry.
+            * The "Age" Multiplier: Machine risk increases exponentially after 15 years of service; sensor data shows that machines in this age bracket are 3.5x more likely to experience voltage spikes that fry internal circuits.
+            """
+        ]
+
+    with c2:
+        st.markdown(
+            f"""
+            <div class='card' style='text-align:left'>
+            <h5 style='margin:0'>Key Stats and risk</h5>
+            <div style='color:gray;margin-top:6px'>
+            {' '.join(key_stats)}
+            </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        crash_type = [
+            """
+            * Kinetic & Mechanical Crashes: These involve physical failures in moving parts like conveyors and AGVs, often caused by jams or snaps that immediately halt the physical movement of goods.
+            * Electrical & Control System Crashes: These are "invisible" failures, such as brownouts or communication blackouts, where power fluctuations or signal loss paralyze the facility's "brain" and logic.
+            * Hydraulic & Pneumatic Crashes: These occur in lifting and sorting equipment when pressure loss or seal blowouts cause sudden, gravity-driven failures of heavy loads.
+            * Rack & Structural Collapses: The most catastrophic warehouse event, these are domino-effect failures usually triggered by unreported structural "injuries" that lead to total racking failure.
+            """
+        ]
+    with c3:
+        st.markdown(
+            f"""
+            <div class='card' style='text-align:left'>
+            <h8 style='margin:0'>common crash types</h8>
+            <div style='color:gray;margin-top:6px'>
+            {' '.join(crash_type)}
+            </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    st.markdown("<br>", unsafe_allow_html=True)
+
+with tabs[1]:
+    col1, col2 = st.columns([4, 2])
+
+    with col1:
+        upload_file = st.file_uploader("Upload Warehouse Dataset", type=['csv', 'xlsx'])
+
+        if upload_file is not None:
+            st.success("File Uploaded successfully!")
+            
+            with st.spinner("Extracting the Uploaded WareHouse Dataset!"):
+                if upload_file.name.endswith('.csv'):
+                    data_raw = pd.read_csv(upload_file)
+                    st.write(f"Data Preview: {data_raw.head()}")
+                else:
+                    data_raw = pd.read_excel(upload_file)
+                    st.write(f"Data Preview: {data_raw.head()}")
+
+                st.session_state.data = clean_and_preprocessing(data_raw) 
+                st.success("Data cleaned and preprocessed successfully!")
+                st.dataframe(st.session_state.data.head())           
+        else:
+            st.warning("No file uploaded. Please upload a CSV or Excel file to proceed.")
+
+        
+
+
+with tabs[2]:
+    st.header(
+        "Problem Statement and Modeling Approach")
+    st.set_page_config(
+        page_title="Exploratory Analysis", 
+        layout="wide", 
+        initial_sidebar_state="expanded")
+    
+    st.markdown("""    
+    ## Problem Statement
+    Imagine this real-world scenario: A maintenance or field services team manages a fleet of thousands of machines, each with multiple components that may fail over time. Every morning, the team must decide which machines and components to prioritize for maintenance. Inspecting every machine daily is impossible, and the team desperately needs a data driven way to allocate resources effectively. This challenge is common and represents a perfect opportunity to implement **predictive maintenance** solutions.
+    While it can be tempting for data teams to jump straight into **deep learning models**, I’ve been exploring a different approach: the **Cox Proportional Hazards (Cox PH) model with time-varying covariates** using the `lifelines` Python library. This method is highly interpretable, computationally efficient, and familiar to many reliability and quality engineers. It also integrates well with telemetry **IoT signals**, making it ideal for predictive maintenance.
+    In this app, we’ll use the **Azure Predictive Maintenance dataset** to demonstrate how a Cox PH model can be developed and deployed to support smarter maintenance decisions. Specifically, I’ll show how to extend the model with time-varying covariates to estimate the **probability of a component failing within the next 2 days**, a practical use case that empowers teams to prioritize work based on dynamic risk estimates informed by real-time telemetry.
+    Before diving in, here’s why this modeling approach stands out:
+
+    ✅ Combines static attributes (e.g., manufacturer, install date) with real-time telemetry data  
+    ✅ Easily integrates into production pipelines using Python and open-source tools like `lifelines`  
+    ✅ Produces actionable failure probabilities with minimal post-processing  
+    ✅ Handles censored data and class imbalance—both common in maintenance scenarios  
+    ✅ Bridges the gap between data science teams and reliability engineers familiar with these models in tools like JMP or Minitab, now with scalable and automatable Python workflows  
+    """)
+    
+    st.divider()
+    st.header("Data Overview")
+    st.markdown("""
+                The dataset contains 884,166 rows of sensor telemetry data collected from a fleet of machines over 
+                a 12-month period. Each row represents a snapshot of sensor readings at a specific timestamp, 
+                along with the corresponding machine ID and an errorID that indicates whether a failure occurred 
+                within the next 2 days. The dataset includes the following key features: 
+
+                1. The Identity & Lifecycle Columns:
+
+                ✅ `model`: The specific category or series of the machine. Different models in the dataset have different "nominal" operating ranges; 
+                    for example, a high-speed sorter will naturally have a higher rotate value than a heavy-duty lift.\n
+                ✅ `age`: The number of years the machine has been in service. In reliability engineering, this is used to calculate the "Bathtub Curve"—where machines are most likely to fail when they are brand new (infant mortality) or very old (wear-out phase).
+
+                2. The Telemetry (Sensor) Columns
+                These are your continuous variables that describe the "vitals" of the equipment:
+
+                ✅ `volt (Voltage)`: Measures electrical input. Sudden spikes can indicate power surges, while "dips" might suggest a motor is struggling to draw power.\n
+                ✅ `rotate (Rotation/RPM)`: The speed at which the internal motor or components are spinning.\n
+                ✅ `pressure`: Usually relates to hydraulic or pneumatic systems. A sudden drop often points to a seal leak, while a steady increase suggests a blockage.\n
+                ✅ `vibration`: The most critical indicator for mechanical health. High vibration is almost always a sign of misalignment, loose bolts, or worn-out bearings.\n
+
+                3. The Event & Failure Columns:
+
+                ✅ `errorID`: These are non-breaking alerts. Think of them as "yellow lights" on a dashboard. They indicate the machine is still running, but something is suboptimal.\n
+                ✅ `failure`: This is your "target variable." It marks the moment the machine actually stopped working. Usually, this is categorized by which component failed (e.g., comp1, comp2).\n
+                ✅ `comp`: Indicates which specific part was replaced or serviced during a maintenance event.\n
+
+                4. The Time Intelligence Columns:
+
+                ✅ `datetime`: The precise timestamp of the reading.\n
+                ✅ `year, month, date, hour`: These are "features" engineered from the datetime.
+                    `hour` is vital for finding shift-change patterns.
+                    month helps identify seasonality (e.g., do machines overheat more in the summer?).
+                """)
+    
+    st.divider()
+    st.header("Exploratory Data Analysis")
+    st.markdown(""" 
+                Exploratory Data Analysis (EDA) is the most critical phase of this industrial project because it allows you to transform raw 
+                sensor telemetry into actionable business intelligence by uncovering the "hidden" relationships between machine health and operational variables. 
+                By performing EDA, you can identify critical sensor correlations—such as how a specific increase in vibration and pressure creates 
+                a "danger zone" for failure—and detect anomalies or outliers that represent early warning signs of the warehouse crashes described earlier. 
+                Furthermore, EDA helps you understand the seasonal and hourly patterns of errorID occurrences, ensuring that your predictive models 
+                aren't biased by "noisy" data or mislabeled NaN values. Ultimately, this process validates your data's integrity and provides the 
+                statistical foundation needed to move from a reactive maintenance mindset to a high-value, predictive maintenance strategy that 
+                saves the company thousands in unplanned downtime.
+                """)
+    if st.session_state.data is None:
+        st.warning("Please upload a dataset in the 'Upload Data' section to perform Exploratory Data Analysis.")
+    else:
+        df = st.session_state.data
+        st.header("Exploratory Data Analysis (EDA) Visualizations")
+
+        r1c1, r1c2 = st.columns([3, 2])
+
+        with r1c1:
+            st.subheader("Failure Component Count With Percentage")
+            # failure count of the components
+            if 'failure' in df.columns:
+                combine_copy = df.copy()
+                failure_summary = combine_copy['failure'].value_counts().reset_index()
+                failure_summary.columns = ['Failure Type', 'Frequency']
+                total_rows = len(combine_copy)
+                failure_summary['Percentage (%)'] = (failure_summary['Frequency'] / total_rows) * 100
+                failure_summary['Percentage (%)'] = failure_summary['Percentage (%)'].round(2)
+
+                fig, ax = plt.subplots(figsize=(18, 7))
+                ax = sns.barplot(data=failure_summary, x='Failure Type', y='Percentage (%)', hue='Failure Type')
+                for container in ax.containers:
+                    ax.bar_label(container, padding=3)
+                ax.set_ylabel('Percentage %')
+                st.pyplot()
+
+        with r1c2:
+            st.subheader("Failure Probability by Age")
+            # Placeholder for the plot
+
+            if 'age' in df.columns:
+                fig, ax = plt.subplots(figsize=(18, 7))
+                sns.histplot(data=combine_copy, x='age', hue='failure', bins=3, multiple='dodge', ax=ax)
+                ax.set_yscale('log')
+                ax.set_title('Failure Probability by Age')
+                st.pyplot(fig)
+        
+        st.divider()
+        
+        r2c1, r2c2 = st.columns([3, 2])
+
+        with r2c1:
+            st.subheader("Health Profile Box Plot")
+        # Placeholder for the plot
+            sensor_to_plot = st.selectbox("Select Sensor for Box Plot", options=['volt', 'rotate', 'pressure', 'vibration'])
+            fig, ax = plt.subplots(figsize=(18, 7))
+            sns.boxplot(data=df, x='model' if 'model' in df.columns else None, y=sensor_to_plot, ax=ax, palette='viridis')
+            st.pyplot(fig)
+    
+        with r2c2:
+            st.subheader("Multi sensor Time Series")
+        # Placeholder for the plot
+
+            values = ['volt', 'rotate', 'pressure', 'vibration']
+            fig, axes = plt.subplots(2, 2,  figsize=(18,14))
+            fig.suptitle('Multi-sensor Time Series', fontsize=20)
+
+            for i, values in enumerate(values):
+                ax = axes[i//2, i%2]
+                sns.lineplot(data=combine_copy, x='hour', y=values, ax=ax, hue=None, palette='viridis', errorbar=None)
+                ax.set_title(f'{values.capitalize()} Trend By Hour')
+                st.pyplot(fig)
+        
+
+
+with tabs[3]:
+    st.header("Dashboard")

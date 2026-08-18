@@ -1,0 +1,46 @@
+1) Write a program that computes both the area and circumference of a circle using functions.
+                                                                                                                                            (8 marks)
+2) A program is required that accepts marks in three subjects and calculates the average mark. The program then assigns the student a grade based on the average mark using the grading system below.​
+Average Mark
+Grade
+80 – 100
+A
+70 – 80
+B
+60 – 70
+C
+50 – 60
+D
+0 – 50
+E
+​i) Write a program with a function called get_grade which accepts the average mark and returns the grade to the main function which then outputs it.                                  (8 marks)
+
+ii) Write a program with a function called grade which accepts the average mark and prints the grade.                                                                                                        (8 marks)
+
+3) A program is required that accepts three integers and finds the smallest.
+i) Write a program with a function called small which accepts the three integers entered via the main function and returns the smallest. The main function should output the three numbers entered together with the smallest.                                                                 (8 marks)
+
+ii) Write a program with a function called smallest which accepts three integers entered via the main function and prints them together with the smallest.                                    (8 marks)
+
+4) Write a function definition for a function called even which accepts an integer and returns 1 to the calling function if the integer is even and 0 if it is odd.                                      (4 marks)
+5) Write a program that accepts 3 floating-point numbers and outputs the biggest. The program should make use of a (user-defined) function called get_big, which accepts the three numbers entered from main and then returns the biggest. The main function should then output the three numbers entered together with the biggest.        (8 marks)
+6) Write a program that uses a function called calc_vol to compute the volume of a cube as vol = height * length * breadth. The program should output both the dimensions and result.                                                                                                         (8 marks)
+7) Write a program that computes the area of either a rectangle, a circle or a right-angled triangle. The program should display a menu that enables the user to select the type of figure whose area he/she wants to compute. Depending on the users choice, the program should prompt for the dimensions and perform the computations. The output should be: - The type of figure, the dimensions and the area. Define three functions: - one to compute the area of a rectangle, one the area of a circle and one the area of a triangle. (NB: 1. The calculation should be for only one figure at any one time. 2. Computations should be done in the user-defined functions.)   (12 marks)
+8) Write a program using the tax information below: -
+Gross Pay                  ​      Tax Rate
+Over 50,000​35%
+>= 40,000 but below 50,000​30%
+>=20,000 but below 40,000​25%
+>=12,000 but below 20,000​15%
+Below 12,000​no tax.
+Write a program that accepts the gross pay and outputs both the tax amount and the net pay (Assume the net pay is gross pay – tax amount). Define a function calc_tax that accepts the gross from main and then computes and returns the tax amount. Main should then output both the tax amount and the net pay.                                 (8 marks)
+9) Write a program that computes the sum of all whole numbers between 20 and 70 using a loop. The program should use a function called calculate_total to compute the sum and return it to the main function, which then outputs it.                   (8 marks)
+10) Write a program that displays a temperature conversion chart on the screen as follows:
+Fahrenheit       Celsius
+      0               -17.78
+    20                 -6.67
+    40                  4.44
+    …                   …
+    …                   …
+  300               148.89
+Required: The displaying of the values should be done by main but the conversion from Fahrenheit to Celsius should be done by a function called Temp.

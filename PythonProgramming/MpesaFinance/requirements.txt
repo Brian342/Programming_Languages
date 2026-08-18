@@ -1,0 +1,15 @@
+Flask
+matplotlib
+numpy
+pandas
+pdfplumber
+pikepdf
+plotly
+prophet
+PyPDF2
+python_dateutil
+scikit_learn
+seaborn
+streamlit
+tabula
+tabula_py

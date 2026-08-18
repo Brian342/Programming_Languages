@@ -1,0 +1,7 @@
+openjdk-17-jre-headless
+libqpdf-dev
+build-essential
+libsm6
+libxext6
+libxrender1
+poppler-utils
