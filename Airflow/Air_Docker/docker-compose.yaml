@@ -92,6 +92,7 @@ x-airflow-common:
 services:
   postgres:
     image: postgres:16
+    platform: linux/arm64  
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -101,8 +102,9 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
-      retries: 5
-      start_period: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     restart: always
 
   redis:
