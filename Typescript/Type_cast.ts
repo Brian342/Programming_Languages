@@ -21,3 +21,8 @@ if (typeof y == "number"){
     const result = y.length
 }
 
+// type casting
+let z: unknown = 1
+
+const result = (z as number) + 1
+
