@@ -7,3 +7,11 @@ const mySubmit = document.getElementById("mySubmit")
 const subResult = document.getElementById("subResult")
 const paymentResult = document.getElementById("paymentResult")
 
+
+mySubmit.onclick = function(){
+    if(myCheckBox.checked){
+        subResult.textContent = `You are Subscribed`
+    }else{
+        subResult.textContent = `You are Not Subscribed`
+    }
+}
