@@ -1,46 +1,40 @@
-// Variables - A container that stores a value
-//             Behaves as if it were the value it contains
+/*Ternary operator = a shortcut to if() and else statements 
+                    helps to assign a varibale based on a 
+                    condition ? codeIfTrue : codeifFalse; */
+        
+// let age =21;
+// let message = age >= 18 ? `You are an Adult`: `You are a minor`;
 
-// 1. Declaration
-// 2. assignment
+// console.log(message)
 
-// declaration
-let y;
+/*Switch = can be an efficient replacement to many else if statements */
 
-let x = 100;
+let day = 2
+switch(day){
+    case 1:
+        console.log("it is Monday")
+        break;
+    case 2:
+        console.log("it is Tuesday")
+        break;
+    case 3:
+        console.log("it is Wednesday")
+        break;
+    case 4:
+        console.log("it is Thursday")
+        break;
+    case 5:
+        console.log("it is Friday")
+        break;
+    case 6:
+        console.log("it is Saturday")
+        break;
+    case 7:
+        console.log("it is Sunday")
+        break;
+    default:
+        console.log(`${day} is not a day`)
 
-console.log(x);
-
-// javascript data types
-let age = 25;
-let price = 10.99;
-let gpa = 3.9;
-let firstName = "Bro"; // string datatype
-let favoriteFood = "pizza"
-let online = false;
-let forSale = true;
-
-
-console.log(age);
-console.log(price);
-console.log(gpa);
-console.log(firstName);
-console.log(favoriteFood);
-
-
-// used to display the type of a variable
-console.log(typeof firstName);
-console.log(typeof age); 
-console.log(typeof firstName)
-
-
-// String illeteral
-console.log(`You are ${age} years old`);
-console.log(`The price is $${price}`);
-console.log(`Your gpa is: ${gpa}`);
-console.log(`Your name is ${firstName}`);
-console.log(`your favorite food is ${favoriteFood}`);
-console.log(`Bro is online: ${online}`);
-console.log(`Is this car for sale: ${forSale}`);
+}
 
 
