@@ -26,7 +26,8 @@ const Name = makeName("Tim", "James")
 
 function callFunc(func:(f: string, l:string, m?: string)=>string,
  param1: string, param2:string){
-    
+
 
 }
 callFunc(makeName, "Tim", "James")
+//
