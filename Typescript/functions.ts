@@ -30,4 +30,4 @@ function callFunc(func:(f: string, l:string, m?: string)=>string,
 
 }
 callFunc(makeName, "Tim", "James")
-//bn
+//b
