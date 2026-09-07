@@ -1,4 +1,4 @@
-package com.theoriest.greendaybank;
+// package com.theoriest.greendaybank;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
