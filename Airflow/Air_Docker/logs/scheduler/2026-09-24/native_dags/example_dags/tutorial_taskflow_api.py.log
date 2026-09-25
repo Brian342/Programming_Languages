@@ -1,0 +1,22 @@
+[2026-09-24T20:29:04.588+0000] {processor.py:186} INFO - Started process (PID=386) to work on /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T20:29:04.665+0000] {processor.py:914} INFO - Processing file /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py for tasks to queue
+[2026-09-24T20:29:05.383+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:05.334+0000] {dagbag.py:588} INFO - Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T20:29:07.903+0000] {processor.py:925} INFO - DAG(s) 'tutorial_taskflow_api' retrieved from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T20:29:31.444+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:31.325+0000] {override.py:1912} INFO - Created Permission View: can delete on DAG:tutorial_taskflow_api
+[2026-09-24T20:29:31.903+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:31.902+0000] {override.py:1912} INFO - Created Permission View: can read on DAG:tutorial_taskflow_api
+[2026-09-24T20:29:32.192+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:32.191+0000] {override.py:1912} INFO - Created Permission View: can edit on DAG:tutorial_taskflow_api
+[2026-09-24T20:29:32.350+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:32.341+0000] {override.py:1912} INFO - Created Permission View: can delete on DAG Run:tutorial_taskflow_api
+[2026-09-24T20:29:33.065+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:33.065+0000] {override.py:1912} INFO - Created Permission View: can read on DAG Run:tutorial_taskflow_api
+[2026-09-24T20:29:33.591+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:33.435+0000] {override.py:1912} INFO - Created Permission View: can create on DAG Run:tutorial_taskflow_api
+[2026-09-24T20:29:34.219+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:34.205+0000] {override.py:1912} INFO - Created Permission View: menu access on DAG Run:tutorial_taskflow_api
+[2026-09-24T20:29:34.300+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:34.299+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-09-24T20:29:36.484+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:36.479+0000] {dag.py:3262} INFO - Creating ORM DAG for tutorial_taskflow_api
+[2026-09-24T20:29:36.570+0000] {logging_mixin.py:190} INFO - [2026-09-24T20:29:36.570+0000] {dag.py:4180} INFO - Setting next_dagrun for tutorial_taskflow_api to None, run_after=None
+[2026-09-24T20:29:40.345+0000] {processor.py:208} INFO - Processing /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py took 39.065 seconds
+[2026-09-24T22:36:43.714+0000] {processor.py:186} INFO - Started process (PID=383) to work on /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T22:36:44.016+0000] {processor.py:914} INFO - Processing file /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py for tasks to queue
+[2026-09-24T22:36:44.114+0000] {logging_mixin.py:190} INFO - [2026-09-24T22:36:44.092+0000] {dagbag.py:588} INFO - Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T22:36:46.332+0000] {processor.py:925} INFO - DAG(s) 'tutorial_taskflow_api' retrieved from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py
+[2026-09-24T22:36:47.416+0000] {logging_mixin.py:190} INFO - [2026-09-24T22:36:47.414+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-09-24T22:36:56.974+0000] {logging_mixin.py:190} INFO - [2026-09-24T22:36:56.970+0000] {dag.py:4180} INFO - Setting next_dagrun for tutorial_taskflow_api to None, run_after=None
+[2026-09-24T22:37:01.678+0000] {processor.py:208} INFO - Processing /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/tutorial_taskflow_api.py took 18.503 seconds
